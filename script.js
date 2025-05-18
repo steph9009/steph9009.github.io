@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
             expertise3: "Cybersecurity Audits (ISO 27001, GDPR)",
             expertise4: "Vulnerability Assessment & Penetration Testing (VAPT)",
             expertise5: "Network & System Hardening",
-            expertise6: "OS Internals & Artifacts (Windows, macOS, Linux)",
+            expertise6: "Data Analysis, OS Internals & Artifacts (Windows, macOS, Linux)",
             experienceTitle: "Work Experience",
             experience1Title: "Digital Forensics Expert",
             experience1Company: "BIT4LAW S.r.l. (Bologna, IT)",
