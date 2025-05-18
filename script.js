@@ -77,10 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
             expertiseTitle: "Competenze Chiave", // MODIFICATO
             expertise1: "Digital Forensics (Mobile, Computer & Network)",
             expertise2: "Incident Response & Analisi Malware",
-            expertise3: "Audit Cybersecurity (ISO 27001, GDPR)",
+            expertise3: "Audit sulla Sicurezza Informatica (ISO 27001, GDPR)",
             expertise4: "Vulnerability Assessment & Penetration Testing (VAPT)",
             expertise5: "Hardening di Reti & Sistemi",
-            expertise6: "Internals OS & Artefatti Digitali (Windows, macOS, Linux)",
+            expertise6: "Analisi dei Dati e Artefatti Digitali dei Sistemi Operativi (Windows, macOS, Linux)",
             experienceTitle: "Esperienza Professionale",
             experience1Title: "Digital Forensics Expert", // MODIFICATO
             experience1Company: "BIT4LAW S.r.l. (Bologna, IT)",
