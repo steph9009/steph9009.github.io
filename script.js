@@ -1,12 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM completamente caricato e analizzato.");
+
     const body = document.body;
     const themeToggleButton = document.getElementById('theme-toggle');
     const backToTopButton = document.getElementById('back-to-top');
     const langToggleEN = document.getElementById('language-toggle-en');
     const langToggleIT = document.getElementById('language-toggle-it');
-    const contactRevealButtons = document.querySelectorAll('.contact-reveal');
+    const contactRevealButtons = document.querySelectorAll('.contact-reveal'); // NodeList, può essere vuota
 
-    // --- 0. Text Translations ---
+    console.log("Elementi base selezionati:", { body, themeToggleButton, backToTopButton, langToggleEN, langToggleIT, contactRevealButtons });
+
+    // --- 0. Text Translations & Hidden Contacts ---
     const translations = {
         en: {
             pageTitle: "Stefano Siani - DFIR & Cybersecurity",
@@ -26,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             emailLabel: "Email",
             phoneLabel: "Phone",
             copiedLabel: "Copied!",
+            errorCopyingLabel: "Error copying",
             expertiseTitle: "Key Expertise",
             expertise1: "Digital Forensics (Mobile, Computer & Network)",
             expertise2: "Incident Response & Malware Analysis",
@@ -70,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             emailLabel: "Email",
             phoneLabel: "Tel",
             copiedLabel: "Copiato!",
+            errorCopyingLabel: "Errore copia",
             expertiseTitle: "Expertise Chiave",
             expertise1: "Digital Forensics (Mobile, Computer & Network)",
             expertise2: "Incident Response & Analisi Malware",
@@ -97,61 +103,65 @@ document.addEventListener('DOMContentLoaded', function() {
             footerPrivacy: "Questa pagina non utilizza cookie e rispetta la tua privacy."
         }
     };
-    // Dati di contatto "nascosti"
     const hiddenContacts = {
         email: 'm' + 'y' + 's' + 't' + 'e' + 'f' + 'a' + 'n' + 'o' + '@' + 'g' + 'm' + 'a' + 'i' + 'l' + '.' + 'c' + 'o' + 'm',
         phone: '(+39) ' + '393' + '245' + '4455'
     };
 
-
     // --- 1. Theme Management ---
-    let currentTheme = localStorage.getItem('theme');
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    let currentSystemTheme = 'dark'; // Default if not detectable
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        currentSystemTheme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        currentSystemTheme = 'dark';
+    }
+
+    let activeTheme = localStorage.getItem('theme') || currentSystemTheme;
+    console.log("Tema iniziale determinato:", activeTheme, "(localStorage:", localStorage.getItem('theme'), ", system:", currentSystemTheme, ")");
+
 
     function applyTheme(theme) {
+        console.log("Applicazione tema:", theme);
+        if (!body) { console.error("Body element not found!"); return; }
         if (theme === 'dark') {
             body.classList.add('dark-mode');
             body.classList.remove('light-mode');
-            if (themeToggleButton) themeToggleButton.textContent = '☀️'; // Sun for dark mode (to switch to light)
+            if (themeToggleButton) themeToggleButton.textContent = '☀️';
         } else {
             body.classList.add('light-mode');
             body.classList.remove('dark-mode');
-            if (themeToggleButton) themeToggleButton.textContent = '🌙'; // Moon for light mode (to switch to dark)
+            if (themeToggleButton) themeToggleButton.textContent = '🌙';
         }
+        activeTheme = theme; // Aggiorna la variabile globale
     }
 
     function toggleTheme() {
-        currentTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
-        applyTheme(currentTheme);
-        localStorage.setItem('theme', currentTheme);
+        const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+        console.log("Toggle tema a:", newTheme);
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
     }
 
-    // Initial theme setup
-    if (currentTheme) {
-        applyTheme(currentTheme);
-    } else if (prefersDarkScheme.matches) {
-        applyTheme('dark'); // System preference for dark
-        currentTheme = 'dark';
-    } else {
-        applyTheme('dark'); // Default to dark as requested, if no system pref for dark or no localStorage
-        currentTheme = 'dark';
-    }
-     // If no theme was set by localStorage, but system prefers light, switch to light
-    if (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        applyTheme('light');
-        currentTheme = 'light';
-    }
-
+    applyTheme(activeTheme); // Applica il tema iniziale
 
     if (themeToggleButton) {
         themeToggleButton.addEventListener('click', toggleTheme);
+    } else {
+        console.warn("Pulsante toggle tema non trovato.");
     }
 
-    // Listen for system theme changes if no manual override
-    prefersDarkScheme.addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) { // Only if user hasn't manually set a theme
-            currentTheme = e.matches ? 'dark' : 'light';
-            applyTheme(currentTheme);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) { // Solo se l'utente non ha scelto manualmente
+            console.log("Preferenza di sistema per il tema cambiata.");
+            currentSystemTheme = e.matches ? 'dark' : 'light';
+            applyTheme(currentSystemTheme);
+        }
+    });
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+             console.log("Preferenza di sistema per il tema cambiata.");
+            currentSystemTheme = e.matches ? 'light' : 'dark';
+            applyTheme(currentSystemTheme);
         }
     });
 
@@ -172,104 +182,109 @@ document.addEventListener('DOMContentLoaded', function() {
         backToTopButton.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    } else {
+        console.warn("Pulsante 'Back to Top' non trovato.");
     }
 
     // --- 3. Multilingual Functionality ---
-    let currentLanguage = localStorage.getItem('language') || 'en'; // Default to English
+    let currentLanguage = localStorage.getItem('language') || 'en';
+    console.log("Lingua iniziale determinata:", currentLanguage);
+
+    function getTranslation(lang, key, fallbackKey = null) {
+        if (translations[lang] && translations[lang][key]) {
+            return translations[lang][key];
+        }
+        if (fallbackKey && translations[lang] && translations[lang][fallbackKey]) {
+            // Fallback per chiavi comuni tipo show/hide se la specifica non esiste
+            return translations[lang][fallbackKey];
+        }
+        console.warn(`Traduzione mancante per chiave: ${key} in lingua: ${lang}`);
+        return key; // Ritorna la chiave stessa se non trova nulla
+    }
+
 
     function setLanguage(lang) {
+        console.log("Impostazione lingua a:", lang);
         currentLanguage = lang;
         localStorage.setItem('language', lang);
+        if (document.documentElement) document.documentElement.lang = lang;
 
-        document.documentElement.lang = lang; // Update lang attribute of <html>
-
-        const elementsToTranslate = document.querySelectorAll('[data-lang-key]');
-        elementsToTranslate.forEach(el => {
-            const key = el.dataset.langKey;
-            if (translations[lang] && translations[lang][key]) {
-                el.textContent = translations[lang][key];
-            }
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            el.textContent = getTranslation(lang, el.dataset.langKey);
         });
 
-        // Update aria-labels separately if they use different keys or need special handling
         document.querySelectorAll('[data-lang-key-aria-label]').forEach(el => {
-            const key = el.dataset.langKeyAriaLabel;
-            if (translations[lang] && translations[lang][key]) {
-                el.setAttribute('aria-label', translations[lang][key]);
-            }
+            el.setAttribute('aria-label', getTranslation(lang, el.dataset.langKeyAriaLabel));
         });
-        
-        // Update contact button texts based on their current state
+
         contactRevealButtons.forEach(button => {
             const type = button.dataset.contactType;
             const placeholderId = `contact-placeholder-${type}`;
             const placeholder = document.getElementById(placeholderId);
             const isVisible = placeholder && placeholder.classList.contains('visible');
-
-            if (isVisible) {
-                button.textContent = translations[lang][button.dataset.langKeyHide];
-            } else {
-                button.textContent = translations[lang][button.dataset.langKeyShow];
-            }
+            
+            button.textContent = getTranslation(lang, isVisible ? button.dataset.langKeyHide : button.dataset.langKeyShow);
+            // Aggiorna anche aria-label del bottone di contatto se necessario e se ha un suo data-lang-key-aria-label
         });
 
-
-        // Update active class for language buttons
         if (langToggleEN && langToggleIT) {
             langToggleEN.classList.toggle('active', lang === 'en');
             langToggleIT.classList.toggle('active', lang === 'it');
         }
+        console.log("Lingua impostata:", currentLanguage);
     }
 
     if (langToggleEN) {
         langToggleEN.addEventListener('click', () => setLanguage('en'));
-    }
+    } else { console.warn("Pulsante lingua EN non trovato."); }
+
     if (langToggleIT) {
         langToggleIT.addEventListener('click', () => setLanguage('it'));
-    }
-    // Initial language setup
-    setLanguage(currentLanguage);
+    } else { console.warn("Pulsante lingua IT non trovato."); }
+    
+    setLanguage(currentLanguage); // Imposta la lingua all'avvio
 
 
     // --- 4. Contact Info Enhancements ---
     contactRevealButtons.forEach(button => {
-        // Set initial text based on current language
-        button.textContent = translations[currentLanguage][button.dataset.langKeyShow];
-
+        // Il testo iniziale è già impostato da setLanguage
         button.addEventListener('click', function() {
             const type = this.dataset.contactType;
             const contactValue = hiddenContacts[type];
             const placeholderId = `contact-placeholder-${type}`;
             const placeholder = document.getElementById(placeholderId);
 
-            if (!placeholder) return;
+            if (!placeholder || !contactValue) {
+                console.error("Placeholder o contactValue mancante per tipo:", type);
+                return;
+            }
 
-            const isVisible = placeholder.classList.toggle('visible');
+            const isNowVisible = placeholder.classList.toggle('visible');
+            this.textContent = getTranslation(currentLanguage, isNowVisible ? this.dataset.langKeyHide : this.dataset.langKeyShow);
 
-            if (isVisible) {
-                this.textContent = translations[currentLanguage][this.dataset.langKeyHide];
-                let label = (type === 'email') ? translations[currentLanguage].emailLabel : translations[currentLanguage].phoneLabel;
+            if (isNowVisible) {
+                const label = getTranslation(currentLanguage, type === 'email' ? 'emailLabel' : 'phoneLabel');
                 placeholder.textContent = `${label}: ${contactValue}`;
                 placeholder.style.cursor = 'pointer';
-                placeholder.title = `Copy ${type}`; // Verrà tradotto se necessario
+                placeholder.title = `Copy ${type}`; // Potrebbe essere tradotto con un'altra data-key
 
                 placeholder.onclick = function() {
                     navigator.clipboard.writeText(contactValue).then(() => {
                         const originalText = placeholder.textContent;
-                        placeholder.textContent = `${label}: ${contactValue} (${translations[currentLanguage].copiedLabel})`;
+                        placeholder.textContent = `${label}: ${contactValue} (${getTranslation(currentLanguage, 'copiedLabel')})`;
                         setTimeout(() => {
-                            placeholder.textContent = originalText;
+                            placeholder.textContent = originalText; // Ripristina solo se ancora visibile
+                             if(placeholder.classList.contains('visible')) {
+                                placeholder.textContent = `${label}: ${contactValue}`;
+                             }
                         }, 2000);
                     }).catch(err => {
-                        console.error(`Error copying ${type}: `, err);
-                        placeholder.textContent = `${label}: ${contactValue} (Error copying)`;
+                        console.error(`Errore nel copiare ${type}: `, err);
+                        placeholder.textContent = `${label}: ${contactValue} (${getTranslation(currentLanguage, 'errorCopyingLabel')})`;
                     });
                 };
-                // Make visible with content
                 placeholder.style.display = 'inline-block';
-
             } else {
-                this.textContent = translations[currentLanguage][this.dataset.langKeyShow];
                 placeholder.textContent = '';
                 placeholder.style.display = 'none';
                 placeholder.onclick = null;
@@ -282,5 +297,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentYearSpan = document.getElementById('currentYear');
     if (currentYearSpan) {
         currentYearSpan.textContent = new Date().getFullYear();
+    } else {
+        console.warn("Elemento per l'anno corrente non trovato.");
     }
+
+    console.log("Setup script completato.");
 });
