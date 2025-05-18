@@ -77,7 +77,8 @@ body {
     padding: 8px 12px;
     cursor: pointer;
     border-radius: 5px;
-    font-size: 1em;
+    font-size: 1em; /* Leggermente più piccolo per adattarsi meglio */
+    line-height: 1; /* Per allineare meglio il testo/emoji */
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 #theme-toggle:hover, .language-switcher button:hover {
@@ -85,7 +86,7 @@ body {
 }
 .language-switcher button.active {
     background-color: var(--link-color);
-    color: var(--bg-color); /* Testo contrastante per il bottone attivo */
+    color: var(--bg-color);
     border-color: var(--link-color);
 }
 
@@ -95,12 +96,14 @@ header {
     margin-bottom: 40px;
     border-bottom: 1px solid var(--border-color-heavy);
     padding-bottom: 20px;
+    padding-top: 40px; /* Aumentato per desktop per dare spazio ai controlli */
 }
 
 header h1 {
     font-size: 2.2em;
     margin-bottom: 0.2em;
     color: var(--header-text-color);
+    margin-top: 0; /* Assicura che non ci siano margini che spingono il padding */
 }
 
 header .subtitle {
@@ -139,7 +142,7 @@ p {
     margin-bottom: 10px;
     color: var(--text-color-light);
 }
-#programming p { /* Testo principale per la sezione programming */
+#programming p {
      color: var(--text-color);
 }
 
@@ -152,7 +155,7 @@ ul li {
     margin-bottom: 8px;
     color: var(--text-color-light);
 }
-#expertise ul li { /* Testo principale per la sezione expertise */
+#expertise ul li {
     color: var(--text-color);
 }
 
@@ -168,20 +171,20 @@ a:hover, a:focus {
 
 /* Sezione Contatti */
 #contact ul li {
-    display: flex; /* Allinea icona e bottone/link */
+    display: flex;
     align-items: center;
-    margin-bottom: 12px; /* Aumentato per più spazio */
+    margin-bottom: 12px;
 }
 #contact ul li i {
-    margin-right: 10px; /* Più spazio per l'icona */
-    color: var(--link-color); /* Icone con colore link */
+    margin-right: 10px;
+    color: var(--link-color);
     width: 20px;
     text-align: center;
 }
 
 .contact-reveal {
     background: none;
-    border: 1px solid var(--button-bg); /* Bordo per farlo sembrare un bottone */
+    border: 1px solid var(--button-bg);
     color: var(--link-color);
     cursor: pointer;
     padding: 5px 10px;
@@ -202,10 +205,17 @@ a:hover, a:focus {
     border: 1px solid var(--border-color-medium);
     border-radius: 4px;
     font-family: monospace;
-    cursor: default; /* Default, cambierà in pointer se copiabile */
+    cursor: default;
+    display: none; /* Nascosto di default */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(-5px);
 }
-.contact-revealed-info:empty {
-    display: none;
+
+.contact-revealed-info.visible {
+    display: inline-block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 
@@ -218,8 +228,8 @@ a:hover, a:focus {
     color: var(--text-color-light);
     margin-bottom: 3px;
 }
-#experience article h3 + p, #education article h3 + p { /* Paragrafo subito dopo h3 */
-     color: var(--text-color); /* Testo più scuro per il nome compagnia/istituto */
+#experience article h3 + p, #education article h3 + p {
+     color: var(--text-color);
 }
 
 
@@ -235,7 +245,8 @@ a:hover, a:focus {
     height: 40px;
     border-radius: 50%;
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1.2em; /* Emoji potrebbe aver bisogno di più spazio */
+    line-height: 40px; /* Allinea l'emoji verticalmente */
     cursor: pointer;
     display: none; /* Nascosto di default */
     z-index: 999;
@@ -263,9 +274,12 @@ footer {
         align-items: flex-end;
         gap: 8px;
     }
-    .language-switcher {
-        display: flex;
-        gap: 5px;
+    header {
+        padding-top: 75px; /* Spazio per i controlli in colonna */
+    }
+     #theme-toggle, .language-switcher button { /* Riduci un po' i pulsanti controllo su mobile */
+        padding: 6px 10px;
+        font-size: 0.9em;
     }
 }
 
@@ -277,24 +291,27 @@ footer {
     .container {
         margin: 10px auto;
     }
+    header {
+        padding-top: 110px; /* Aumentato per mobile più piccolo */
+    }
     header h1 {
         font-size: 1.8em;
     }
-    header .subtitle {
-        font-size: 1em;
-    }
-    #contact ul li {
-        /* Già flessibile, non serve cambiare qui */
-    }
+
     .controls-container {
         top: 10px;
         right: 10px;
+    }
+    #theme-toggle, .language-switcher button {
+        padding: 5px 8px;
+        font-size: 0.85em;
     }
     #back-to-top {
         bottom: 10px;
         right: 10px;
         width: 35px;
         height: 35px;
+        line-height: 35px;
         font-size: 1em;
     }
 }
