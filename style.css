@@ -1,12 +1,53 @@
-/* Reset di base e Stili Globali Minimalisti */
+/* Variabili Colore */
+:root {
+    --font-family-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+    /* Modalità Chiara (Default per le variabili se non sovrascritte) */
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --text-color-light: #555555;
+    --header-text-color: #222222;
+    --border-color-light: #f0f0f0;
+    --border-color-medium: #e0e0e0;
+    --border-color-heavy: #dddddd;
+    --link-color: #007bff;
+    --link-hover-color: #0056b3;
+    --button-bg: #f0f0f0;
+    --button-text: #333333;
+    --button-hover-bg: #e0e0e0;
+    --revealed-bg: #f9f9f9;
+    --controls-bg: rgba(240, 240, 240, 0.9);
+    --controls-text: #333;
+}
+
+body.dark-mode {
+    --bg-color: #1e1e1e; /* Sfondo scuro per dark mode */
+    --text-color: #e0e0e0; /* Testo chiaro */
+    --text-color-light: #b0b0b0;
+    --header-text-color: #ffffff;
+    --border-color-light: #2a2a2a;
+    --border-color-medium: #3a3a3a;
+    --border-color-heavy: #4a4a4a;
+    --link-color: #58a6ff; /* Blu più brillante per dark mode */
+    --link-hover-color: #80bfff;
+    --button-bg: #333333;
+    --button-text: #e0e0e0;
+    --button-hover-bg: #444444;
+    --revealed-bg: #2c2c2c;
+    --controls-bg: rgba(30, 30, 30, 0.9);
+    --controls-text: #e0e0e0;
+}
+
+/* Stili Globali */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: var(--font-family-main);
     line-height: 1.6;
     margin: 0;
     padding: 20px;
-    background-color: #ffffff; /* Bianco */
-    color: #333333; /* Grigio scuro per testo */
-    font-size: 16px; /* o 1em */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -15,47 +56,80 @@ body {
     padding: 0 15px;
 }
 
+/* Controlli Tema e Lingua */
+.controls-container {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    background-color: var(--controls-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#theme-toggle, .language-switcher button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color-medium);
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+#theme-toggle:hover, .language-switcher button:hover {
+    background-color: var(--button-hover-bg);
+}
+.language-switcher button.active {
+    background-color: var(--link-color);
+    color: var(--bg-color); /* Testo contrastante per il bottone attivo */
+    border-color: var(--link-color);
+}
+
+
 header {
     text-align: center;
     margin-bottom: 40px;
-    border-bottom: 1px solid #eeeeee; /* Separatore leggero */
+    border-bottom: 1px solid var(--border-color-heavy);
     padding-bottom: 20px;
 }
 
 header h1 {
-    font-size: 2.2em; /* Leggermente più piccolo per minimalismo */
+    font-size: 2.2em;
     margin-bottom: 0.2em;
-    color: #222222;
+    color: var(--header-text-color);
 }
 
 header .subtitle {
     font-size: 1.1em;
-    color: #555555;
+    color: var(--text-color-light);
     margin-top: 0;
 }
 
 main section {
     margin-bottom: 35px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #f0f0f0; /* Separatori ancora più leggeri */
+    border-bottom: 1px solid var(--border-color-light);
 }
-main section:last-of-type { /* L'ultima section non ha bisogno del bordo inferiore */
+main section:last-of-type {
     border-bottom: none;
     margin-bottom: 20px;
 }
 
-
 h2 {
     font-size: 1.4em;
-    color: #333333;
+    color: var(--text-color);
     margin-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color-medium);
     padding-bottom: 8px;
 }
 
 h3 {
     font-size: 1.1em;
-    color: #444444;
+    color: var(--text-color);
     margin-top: 0;
     margin-bottom: 5px;
 }
@@ -63,61 +137,74 @@ h3 {
 p {
     margin-top: 0;
     margin-bottom: 10px;
+    color: var(--text-color-light);
 }
+#programming p { /* Testo principale per la sezione programming */
+     color: var(--text-color);
+}
+
 
 ul {
     list-style: none;
     padding-left: 0;
 }
-
 ul li {
     margin-bottom: 8px;
+    color: var(--text-color-light);
 }
+#expertise ul li { /* Testo principale per la sezione expertise */
+    color: var(--text-color);
+}
+
 
 a {
-    color: #007bff; /* Blu standard per i link */
+    color: var(--link-color);
     text-decoration: none;
 }
-
 a:hover, a:focus {
     text-decoration: underline;
-    color: #0056b3;
+    color: var(--link-hover-color);
 }
 
 /* Sezione Contatti */
 #contact ul li {
-    display: inline-block; /* Contatti sulla stessa linea se c'è spazio */
-    margin-right: 15px;
-    margin-bottom: 10px;
+    display: flex; /* Allinea icona e bottone/link */
+    align-items: center;
+    margin-bottom: 12px; /* Aumentato per più spazio */
 }
 #contact ul li i {
-    margin-right: 5px;
-    color: #555;
+    margin-right: 10px; /* Più spazio per l'icona */
+    color: var(--link-color); /* Icone con colore link */
+    width: 20px;
+    text-align: center;
 }
 
 .contact-reveal {
     background: none;
-    border: none;
-    color: #007bff;
+    border: 1px solid var(--button-bg); /* Bordo per farlo sembrare un bottone */
+    color: var(--link-color);
     cursor: pointer;
-    padding: 0;
-    font-size: inherit; /* Usa la dimensione del font del genitore */
-    font-family: inherit;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    font-family: var(--font-family-main);
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 .contact-reveal:hover {
-    text-decoration: underline;
+    background-color: var(--button-hover-bg);
+    text-decoration: none;
 }
 
 .contact-revealed-info {
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
+    background-color: var(--revealed-bg);
+    border: 1px solid var(--border-color-medium);
     border-radius: 4px;
-    display: inline-block; /* Si adatta al contenuto */
-    font-family: monospace; /* Per distinguere l'output */
+    font-family: monospace;
+    cursor: default; /* Default, cambierà in pointer se copiabile */
 }
-.contact-revealed-info:empty { /* Nascondi se vuoto */
+.contact-revealed-info:empty {
     display: none;
 }
 
@@ -128,29 +215,67 @@ a:hover, a:focus {
 }
 #experience article p, #education article p {
     font-size: 0.95em;
-    color: #555;
+    color: var(--text-color-light);
     margin-bottom: 3px;
 }
-
-/* Linguaggi */
-#programming p {
-    color: #444;
+#experience article h3 + p, #education article h3 + p { /* Paragrafo subito dopo h3 */
+     color: var(--text-color); /* Testo più scuro per il nome compagnia/istituto */
 }
 
+
+/* Pulsante Back to Top */
+#back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color-medium);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: none; /* Nascosto di default */
+    z-index: 999;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+#back-to-top:hover {
+    opacity: 1;
+    background-color: var(--button-hover-bg);
+}
 
 footer {
     text-align: center;
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid #eeeeee;
+    border-top: 1px solid var(--border-color-heavy);
     font-size: 0.9em;
-    color: #777777;
+    color: var(--text-color-light);
 }
 
-/* Stili per schermi più piccoli se necessario, ma il layout è già abbastanza fluido */
+/* Responsive */
+@media (max-width: 768px) {
+    .controls-container {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+    }
+    .language-switcher {
+        display: flex;
+        gap: 5px;
+    }
+}
+
 @media (max-width: 600px) {
     body {
         font-size: 15px;
+        padding: 10px;
+    }
+    .container {
+        margin: 10px auto;
     }
     header h1 {
         font-size: 1.8em;
@@ -159,7 +284,17 @@ footer {
         font-size: 1em;
     }
     #contact ul li {
-        display: list-item; /* Contatti uno sotto l'altro su schermi piccoli */
-        margin-right: 0;
+        /* Già flessibile, non serve cambiare qui */
+    }
+    .controls-container {
+        top: 10px;
+        right: 10px;
+    }
+    #back-to-top {
+        bottom: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        font-size: 1em;
     }
 }
