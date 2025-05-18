@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const backToTopButton = document.getElementById('back-to-top');
     const langToggleEN = document.getElementById('language-toggle-en');
     const langToggleIT = document.getElementById('language-toggle-it');
-    const contactRevealButtons = document.querySelectorAll('.contact-reveal'); // NodeList, può essere vuota
+    const contactRevealButtons = document.querySelectorAll('.contact-reveal');
 
     console.log("Elementi base selezionati:", { body, themeToggleButton, backToTopButton, langToggleEN, langToggleIT, contactRevealButtons });
 
@@ -21,8 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contactTitle: "Contact",
             contactLinkedIn: "LinkedIn",
             contactGitHub: "GitHub",
-            contactWebsite: "Website",
-            contactTelegram: "Telegram",
+            contactTelegram: "Telegram", // contactWebsite rimosso
             showEmail: "Show Email",
             hideEmail: "Hide Email",
             showPhone: "Show Phone",
@@ -66,8 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contactTitle: "Contatti",
             contactLinkedIn: "LinkedIn",
             contactGitHub: "GitHub",
-            contactWebsite: "Sito Web",
-            contactTelegram: "Telegram",
+            contactTelegram: "Telegram", // contactWebsite rimosso
             showEmail: "Mostra Email",
             hideEmail: "Nascondi Email",
             showPhone: "Mostra Telefono",
@@ -76,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             phoneLabel: "Tel",
             copiedLabel: "Copiato!",
             errorCopyingLabel: "Errore copia",
-            expertiseTitle: "Expertise Chiave",
+            expertiseTitle: "Competenze Chiave", // MODIFICATO
             expertise1: "Digital Forensics (Mobile, Computer & Network)",
             expertise2: "Incident Response & Analisi Malware",
             expertise3: "Audit Cybersecurity (ISO 27001, GDPR)",
@@ -84,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             expertise5: "Hardening di Reti & Sistemi",
             expertise6: "Internals OS & Artefatti Digitali (Windows, macOS, Linux)",
             experienceTitle: "Esperienza Professionale",
-            experience1Title: "Esperto Digital Forensics",
+            experience1Title: "Digital Forensics Expert", // MODIFICATO
             experience1Company: "BIT4LAW S.r.l. (Bologna, IT)",
             experience1Date: "Marzo 2021 – Attuale",
             experience2Title: "IT Manager",
@@ -110,9 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 1. Theme Management ---
     let currentSystemTheme = 'dark'; // Default if not detectable
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
         currentSystemTheme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         currentSystemTheme = 'dark';
     }
 
@@ -132,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body.classList.remove('dark-mode');
             if (themeToggleButton) themeToggleButton.textContent = '🌙';
         }
-        activeTheme = theme; // Aggiorna la variabile globale
+        activeTheme = theme;
     }
 
     function toggleTheme() {
@@ -149,21 +147,17 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.warn("Pulsante toggle tema non trovato.");
     }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) { // Solo se l'utente non ha scelto manualmente
-            console.log("Preferenza di sistema per il tema cambiata.");
-            currentSystemTheme = e.matches ? 'dark' : 'light';
-            applyTheme(currentSystemTheme);
-        }
-    });
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-             console.log("Preferenza di sistema per il tema cambiata.");
-            currentSystemTheme = e.matches ? 'light' : 'dark';
-            applyTheme(currentSystemTheme);
-        }
-    });
+    
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                console.log("Preferenza di sistema per il tema (dark query) cambiata.");
+                currentSystemTheme = e.matches ? 'dark' : 'light'; // se la dark query matcha, è dark, altrimenti light
+                applyTheme(currentSystemTheme);
+            }
+        });
+        // Non serve un listener separato per light, quello per dark è sufficiente per dedurre lo stato.
+    }
 
 
     // --- 2. Back to Top Button ---
@@ -190,14 +184,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentLanguage = localStorage.getItem('language') || 'en';
     console.log("Lingua iniziale determinata:", currentLanguage);
 
-    function getTranslation(lang, key, fallbackKey = null) {
-        if (translations[lang] && translations[lang][key]) {
+    function getTranslation(lang, key, fallbackText = null) {
+        if (translations[lang] && typeof translations[lang][key] !== 'undefined') {
             return translations[lang][key];
         }
-        if (fallbackKey && translations[lang] && translations[lang][fallbackKey]) {
-            // Fallback per chiavi comuni tipo show/hide se la specifica non esiste
-            return translations[lang][fallbackKey];
-        }
+        if (fallbackText !== null) return fallbackText;
         console.warn(`Traduzione mancante per chiave: ${key} in lingua: ${lang}`);
         return key; // Ritorna la chiave stessa se non trova nulla
     }
@@ -210,21 +201,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (document.documentElement) document.documentElement.lang = lang;
 
         document.querySelectorAll('[data-lang-key]').forEach(el => {
-            el.textContent = getTranslation(lang, el.dataset.langKey);
+            el.textContent = getTranslation(lang, el.dataset.langKey, el.textContent); // Passa testo corrente come fallback
         });
 
         document.querySelectorAll('[data-lang-key-aria-label]').forEach(el => {
-            el.setAttribute('aria-label', getTranslation(lang, el.dataset.langKeyAriaLabel));
+            el.setAttribute('aria-label', getTranslation(lang, el.dataset.langKeyAriaLabel, el.getAttribute('aria-label')));
         });
-
+        
         contactRevealButtons.forEach(button => {
             const type = button.dataset.contactType;
             const placeholderId = `contact-placeholder-${type}`;
             const placeholder = document.getElementById(placeholderId);
             const isVisible = placeholder && placeholder.classList.contains('visible');
             
-            button.textContent = getTranslation(lang, isVisible ? button.dataset.langKeyHide : button.dataset.langKeyShow);
-            // Aggiorna anche aria-label del bottone di contatto se necessario e se ha un suo data-lang-key-aria-label
+            const textKey = isVisible ? button.dataset.langKeyHide : button.dataset.langKeyShow;
+            button.textContent = getTranslation(lang, textKey, button.textContent);
         });
 
         if (langToggleEN && langToggleIT) {
@@ -242,39 +233,38 @@ document.addEventListener('DOMContentLoaded', function() {
         langToggleIT.addEventListener('click', () => setLanguage('it'));
     } else { console.warn("Pulsante lingua IT non trovato."); }
     
-    setLanguage(currentLanguage); // Imposta la lingua all'avvio
+    setLanguage(currentLanguage);
 
 
     // --- 4. Contact Info Enhancements ---
     contactRevealButtons.forEach(button => {
-        // Il testo iniziale è già impostato da setLanguage
         button.addEventListener('click', function() {
             const type = this.dataset.contactType;
             const contactValue = hiddenContacts[type];
             const placeholderId = `contact-placeholder-${type}`;
             const placeholder = document.getElementById(placeholderId);
 
-            if (!placeholder || !contactValue) {
+            if (!placeholder || typeof contactValue === 'undefined') {
                 console.error("Placeholder o contactValue mancante per tipo:", type);
                 return;
             }
 
             const isNowVisible = placeholder.classList.toggle('visible');
-            this.textContent = getTranslation(currentLanguage, isNowVisible ? this.dataset.langKeyHide : this.dataset.langKeyShow);
+            const textKey = isNowVisible ? this.dataset.langKeyHide : this.dataset.langKeyShow;
+            this.textContent = getTranslation(currentLanguage, textKey, this.textContent);
 
             if (isNowVisible) {
                 const label = getTranslation(currentLanguage, type === 'email' ? 'emailLabel' : 'phoneLabel');
                 placeholder.textContent = `${label}: ${contactValue}`;
                 placeholder.style.cursor = 'pointer';
-                placeholder.title = `Copy ${type}`; // Potrebbe essere tradotto con un'altra data-key
+                // placeholder.title = `Copy ${type}`; // Potrebbe essere tradotto
 
                 placeholder.onclick = function() {
                     navigator.clipboard.writeText(contactValue).then(() => {
-                        const originalText = placeholder.textContent;
+                        const currentPlaceholderText = placeholder.textContent; // Salva il testo corrente
                         placeholder.textContent = `${label}: ${contactValue} (${getTranslation(currentLanguage, 'copiedLabel')})`;
                         setTimeout(() => {
-                            placeholder.textContent = originalText; // Ripristina solo se ancora visibile
-                             if(placeholder.classList.contains('visible')) {
+                             if(placeholder.classList.contains('visible')) { // Ripristina solo se ancora visibile
                                 placeholder.textContent = `${label}: ${contactValue}`;
                              }
                         }, 2000);
@@ -283,10 +273,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         placeholder.textContent = `${label}: ${contactValue} (${getTranslation(currentLanguage, 'errorCopyingLabel')})`;
                     });
                 };
-                placeholder.style.display = 'inline-block';
+                // placeholder.style.display = 'inline-block'; // Gestito da classe .visible in CSS
             } else {
-                placeholder.textContent = '';
-                placeholder.style.display = 'none';
+                // placeholder.textContent = ''; // Gestito da classe .visible in CSS
+                // placeholder.style.display = 'none';
                 placeholder.onclick = null;
             }
         });
