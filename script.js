@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             education2Institution: "University of Milan",
             education2Date: "February 2021",
             programmingTitle: "Programming & Scripting",
-            programmingSkills: "Python, JavaScript, C/C++, Go, Bash",
+            programmingSkills: "C, C++, Go, Java, JavaScript, Python",
             footerRights: "All rights reserved.",
             footerPrivacy: "This page does not use cookies and respects your privacy."
         },
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             education2Institution: "Università degli Studi di Milano",
             education2Date: "Febbraio 2021",
             programmingTitle: "Programmazione & Scripting",
-            programmingSkills: "Python, JavaScript, C/C++, Go, Bash",
+            programmingSkills: "C, C++, Go, Java, JavaScript, Python",
             footerRights: "Tutti i diritti riservati.",
             footerPrivacy: "Questa pagina non utilizza cookie e rispetta la tua privacy."
         }
